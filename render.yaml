@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: pointme-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODEL
+        value: anthropic/claude-3.5-sonnet
+      - key: GOOGLE_PLACES_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false

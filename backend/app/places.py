@@ -35,7 +35,7 @@ def _haversine_km(a: Location, lat: float, lng: float) -> float:
 
 
 async def search_places(query: str, location: Location, radius_m: int) -> list[Provider]:
-    api_key = os.environ.get("GOOGLE_PLACES_API_KEY")
+    api_key = (os.environ.get("GOOGLE_PLACES_API_KEY") or "").strip()
     if not api_key:
         raise RuntimeError("GOOGLE_PLACES_API_KEY is not set")
 

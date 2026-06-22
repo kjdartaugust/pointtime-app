@@ -58,8 +58,8 @@ def _parse_json(content: str) -> dict:
 
 
 async def _request_classification(problem: str) -> dict:
-    api_key = os.environ.get("OPENROUTER_API_KEY")
-    model = os.environ.get("OPENROUTER_MODEL", "openrouter/auto")
+    api_key = (os.environ.get("OPENROUTER_API_KEY") or "").strip()
+    model = os.environ.get("OPENROUTER_MODEL", "openrouter/auto").strip()
     if not api_key:
         raise RuntimeError("OPENROUTER_API_KEY is not set")
 

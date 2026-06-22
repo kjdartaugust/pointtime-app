@@ -45,9 +45,21 @@ def _strip_fences(text: str) -> str:
     return text
 
 
-async def classify(problem: str) -> Classification:
+def _parse_json(content: str) -> dict:
+    """Tolerant JSON parse: try as-is, then the outermost {...} substring."""
+    text = _strip_fences(content)
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        start, end = text.find("{"), text.rfind("}")
+        if start != -1 and end > start:
+            return json.loads(text[start : end + 1])
+        raise
+
+
+async def _request_classification(problem: str) -> dict:
     api_key = os.environ.get("OPENROUTER_API_KEY")
-    model = os.environ.get("OPENROUTER_MODEL", "anthropic/claude-3.5-sonnet")
+    model = os.environ.get("OPENROUTER_MODEL", "openrouter/auto")
     if not api_key:
         raise RuntimeError("OPENROUTER_API_KEY is not set")
 
@@ -71,7 +83,18 @@ async def classify(problem: str) -> Classification:
         resp.raise_for_status()
         content = resp.json()["choices"][0]["message"]["content"]
 
-    data = json.loads(_strip_fences(content))
+    return _parse_json(content)
+
+
+async def classify(problem: str) -> Classification:
+    # Retry once: models occasionally emit malformed JSON. This path is
+    # safety-critical, so we never want a transient parse miss to drop the
+    # emergency check below.
+    try:
+        data = await _request_classification(problem)
+    except (json.JSONDecodeError, KeyError):
+        data = await _request_classification(problem)
+
     result = Classification(**data)
 
     # Deterministic safety override — never trust the model alone for emergencies.

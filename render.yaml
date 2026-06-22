@@ -13,7 +13,7 @@ services:
       - key: OPENROUTER_API_KEY
         sync: false
       - key: OPENROUTER_MODEL
-        value: anthropic/claude-3.5-sonnet
+        value: openrouter/auto
       - key: GOOGLE_PLACES_API_KEY
         sync: false
       - key: ALLOWED_ORIGINS

@@ -57,7 +57,9 @@ async def search_places(query: str, location: Location, radius_m: int) -> list[P
 
     async with httpx.AsyncClient(timeout=30) as client:
         resp = await client.post(PLACES_URL, json=payload, headers=headers)
-        resp.raise_for_status()
+        if resp.status_code >= 400:
+            # Surface Google's actual error message (status + reason) for debugging.
+            raise RuntimeError(f"Places API {resp.status_code}: {resp.text}")
         places = resp.json().get("places", [])
 
     providers: list[Provider] = []

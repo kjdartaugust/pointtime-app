@@ -1,7 +1,10 @@
 import type { Classification, Provider, SeoContent } from "./types";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000";
+const API_BASE = (
+  process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000"
+)
+  .trim()
+  .replace(/\/$/, "");
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {

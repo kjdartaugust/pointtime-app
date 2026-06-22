@@ -4,8 +4,12 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
+const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000")
+  .trim()
+  .replace(/\/$/, "");
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pointme.app"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "PointMe — Describe any problem, find the right help nearby",
     template: "%s · PointMe",
